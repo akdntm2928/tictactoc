@@ -26,6 +26,7 @@
         const $table   =  document.createElement('table');
         const $result  =  document.createElement('result');
         let turn ='O';
+        let clickable =true;
         const rows =[];      
 
 
@@ -34,6 +35,7 @@
 
             // tr row index을 가져올수있다 rowIndex, parentNode 부모요소을 가져 올 수 있다.
             // td cell index을 가져올수있다 cellIndex 
+            // target과 같이 유사 배열은 from 을통해서 배열로 만들수 있다
             let rowIndex =target.parentNode.rowIndex;
             let cellIndex =target.cellIndex;
             let hasWiner = false;
@@ -74,14 +76,8 @@
             
             
         } 
-        const callback = (e)=>{
-            // 칸에 글자가 있나?
-            event.stopPropagation;
-            if(e.target.textContent) return;
-
-            // rows arr에 요소도 같이 바꿈 참조 형태임.
-            e.target.textContent =turn;
-            if(checkWinner(e.target)){
+        const winAndDraw =(target)=>{
+            if(checkWinner(target)){
                 // 이벤트 삭제
                 $table.removeEventListener('click',callback);
                 $result.append(`${turn}님이 승리하였습니다.`);
@@ -89,22 +85,43 @@
             }
             // 무승부 검사
             let draw =true; 
+
             // flat 배열이 2차원배열일경우 flat을통해 1차원배열로 펼쳐서 만들어줌
             // every 배열에 모든 요소가 true 면 하나라도 false가 있으면 false 을 리턴함
             // some 배열에서 한칸이라도 true면 true 모두가 false면 false
-            drow = rows.flat().every((td)=> td.textContent)
-            // rows.forEach((row,ri)=>{
-            //     row.forEach((cell,ci)=>{
-            //         if(!cell.textContent){
-            //             draw=false;
-            //         }
-            //     })
-            // })
+            draw = rows.flat().every((td)=> td.textContent)
+          
             if(draw){
                 $result.append(`무승부 입니다.`);
+                $table.removeEventListener('click',callback);
                 return;
             }
             turn = (turn ==='O')?'X':'O';
+        }
+        const callback = (e)=>{
+            // 칸에 글자가 있나?
+            if(clickable ==false) return;
+            event.stopPropagation;
+            if(e.target.textContent) return;
+
+            // rows arr에 요소도 같이 바꿈 참조 형태임.
+            e.target.textContent =turn;
+            winAndDraw(e.target);
+            if(turn ==='X'){
+                clickable = false
+                let emptyTdCheck = rows.flat().filter((row)=> !row.textContent );
+                let randomCell  = emptyTdCheck[Math.floor(Math.random() * emptyTdCheck.length)];
+                setTimeout(()=>{
+                    randomCell.textContent="X";
+                    winAndDraw(randomCell);
+                    clickable=true;
+                },1000)
+            }
+
+           
+            // console.log(emptyTdCheck);
+
+
         }
         for(let i = 0; i<3; i++){
            const $tr = document.createElement('tr');
