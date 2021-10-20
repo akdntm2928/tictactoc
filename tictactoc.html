@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>tictactoc</title>
+</head>
+<style>
+    table{
+        border-collapse: collapse;
+    }
+    td{
+        border: 1px solid black;
+        width: 40px;
+        height: 40px;
+        text-align: center;
+    }
+</style>
+<body>
+    <script>
+        // 구조 분해 할당 밑에 내용과 같음
+
+        const { body } =  document;
+        // const body  = document.body
+        const $table   =  document.createElement('table');
+        const $result  =  document.createElement('result');
+        let turn ='O';
+        const rows =[];      
+
+
+        // 승리 체크
+        const checkWinner =(target)=>{
+
+            // tr row index을 가져올수있다rowIndex 
+            // td cell index을 가져올수있다rowIndex 
+            let rowIndex =target.parentNode.rowIndex;
+            let cellIndex =target.cellIndex;
+            let hasWiner = false;
+            
+            // rows.forEach((row,ri)=>{
+            //     row.forEach((cell,ci)=>{
+            //         if(cell===target){
+            //             rowIndex =ri;
+            //             cellIndex =ci;
+            //         }
+            //     })
+            // })
+            
+            if(rows[rowIndex][0].textContent ===turn && 
+               rows[rowIndex][1].textContent ===turn &&
+               rows[rowIndex][2].textContent ===turn
+               ){
+            
+                hasWiner=true;
+               }
+
+            if( rows[0][cellIndex].textContent ===turn &&
+                rows[1][cellIndex].textContent ===turn &&
+                rows[2][cellIndex].textContent ===turn 
+            ){
+                hasWiner =true;
+            }
+
+            if(rows[0][0].textContent == turn && rows[1][1].textContent== turn  &&rows[2][2].textContent == turn){
+                hasWiner =true;
+            }
+
+            if(rows[0][2].textContent == turn && rows[1][1].textContent == turn  &&rows[2][0].textContent == turn){
+                hasWiner =true;
+            }
+
+            return hasWiner;
+            
+            
+        } 
+        const callback = (e)=>{
+            // 칸에 글자가 있나?
+            event.stopPropagation;
+            if(e.target.textContent) return;
+
+            // rows arr에 요소도 같이 바꿈 참조 형태임.
+            e.target.textContent =turn;
+            if(checkWinner(e.target)){
+                // 이벤트 삭제
+                $table.removeEventListener('click',callback);
+                $result.append(`${turn}님이 승리하였습니다.`);
+                return;
+            }
+            // 무승부 검사
+            let draw =true;
+            rows.forEach((row,ri)=>{
+                row.forEach((cell,ci)=>{
+                    if(!cell.textContent){
+                        draw=false;
+                    }
+                })
+            })
+            if(draw){
+                $result.append(`무승부 입니다.`);
+                return;
+            }
+            turn = (turn ==='O')?'X':'O';
+        }
+        for(let i = 0; i<3; i++){
+           const $tr = document.createElement('tr');
+           const cells = [];
+           for(let j= 0; j<3; j++){
+                const $td =document.createElement('td');
+                cells.push($td)
+                $tr.append($td);
+                // $td.addEventListener('click',callback);
+       
+            }   
+            // 이벤트 버블링
+            $table.addEventListener('click',callback);
+            rows.push(cells);
+            $table.append($tr);
+        }
+        document.body.append($table);
+        document.body.append($result);
+        
+    </script>
+</body>
+</html>
