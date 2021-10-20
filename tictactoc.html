@@ -32,8 +32,8 @@
         // 승리 체크
         const checkWinner =(target)=>{
 
-            // tr row index을 가져올수있다rowIndex 
-            // td cell index을 가져올수있다rowIndex 
+            // tr row index을 가져올수있다 rowIndex, parentNode 부모요소을 가져 올 수 있다.
+            // td cell index을 가져올수있다 cellIndex 
             let rowIndex =target.parentNode.rowIndex;
             let cellIndex =target.cellIndex;
             let hasWiner = false;
@@ -88,14 +88,18 @@
                 return;
             }
             // 무승부 검사
-            let draw =true;
-            rows.forEach((row,ri)=>{
-                row.forEach((cell,ci)=>{
-                    if(!cell.textContent){
-                        draw=false;
-                    }
-                })
-            })
+            let draw =true; 
+            // flat 배열이 2차원배열일경우 flat을통해 1차원배열로 펼쳐서 만들어줌
+            // every 배열에 모든 요소가 true 면 하나라도 false가 있으면 false 을 리턴함
+            // some 배열에서 한칸이라도 true면 true 모두가 false면 false
+            drow = rows.flat().every((td)=> td.textContent)
+            // rows.forEach((row,ri)=>{
+            //     row.forEach((cell,ci)=>{
+            //         if(!cell.textContent){
+            //             draw=false;
+            //         }
+            //     })
+            // })
             if(draw){
                 $result.append(`무승부 입니다.`);
                 return;
